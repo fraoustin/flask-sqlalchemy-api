@@ -6,13 +6,9 @@ generate API Rest from Model Class
 ## Installation
 
 
-::
-
     pip install flask-sqlachemy-api
         
 Or
-
-::
 
     git clone https://github.com/fraoustin/flask-sqlachemy-api.git
     cd flask-sqlachemy-api
@@ -20,15 +16,11 @@ Or
 
 You can load test by
 
-::
-
     flake8 --ignore E501,E226,E128,F401
     python -m unittest discover -s tests
 
 
 ## Usage
-
-::
 
     import os, logging
     from flask import Flask
@@ -79,29 +71,29 @@ flask-sqlachemy-api generate 6 Apis from Model Class
 
 - ALL: it's a get request for list of item with url http://domain/api_path/items. You can add parameter filter, orderby, offset, limit.
 
-> http://127.0.0.1:5000/api/v1/todos?orderby=title%20desc  method GET
-> http://127.0.0.1:5000/api/v1/todos?orderby=title%20desc&filter=id%3D  method GET
-> http://127.0.0.1:5000/api/v1/todos?offset=50&limit=50  method GET
+    http://127.0.0.1:5000/api/v1/todos?orderby=title%20desc  method GET
+    http://127.0.0.1:5000/api/v1/todos?orderby=title%20desc&filter=id%3D  method GET
+    http://127.0.0.1:5000/api/v1/todos?offset=50&limit=50  method GET
 
 - GET: it's get request for  a specific item with url http://domain/api_path/item/<id>
 
-> http://127.0.0.1:5000/api/v1/todo/1 method GET
+    http://127.0.0.1:5000/api/v1/todo/1 method GET
 
 - DELETE: it's delete request for a specific item url http://domain/api_path/item/<id>
 
-> http://127.0.0.1:5000/api/v1/todo/1  method DELETE
+    http://127.0.0.1:5000/api/v1/todo/1  method DELETE
 
 - POST: it's post request for add a item with url http://domain/api_path/item. You add data on your request
 
-> http://127.0.0.1:5000/api/v1/todo  method POST
+    http://127.0.0.1:5000/api/v1/todo  method POST
 
 - PUT: it's put request for modify a specific item with url http://domain/api_path/item/<id>. You add data on your request
 
-> http://127.0.0.1:5000/api/v1/todo/1  method PUT
+    http://127.0.0.1:5000/api/v1/todo/1  method PUT
 
 - PATCH: it's patch request for modify a specific item on specific column with url http://domain/api_path/item/<id>. You add data on your request
 
-> http://127.0.0.1:5000/api/v1/todo/1  method PATCH
+    http://127.0.0.1:5000/api/v1/todo/1  method PATCH
 
 You can 
 
@@ -113,9 +105,4 @@ You can
 
 ## TODO
 
-- essayer avec une pk sur plusieurs champs
-- voir pour plusieurs mimetype
-- voir pour test avec html (swagger.json) https://github.com/getsling/flask-swagger
-- faire test avec des fk non respecté (voir comment en sqlachemy on les décrit)
-- faire un outil pour ouvrir les dbml et faire des query
 - voir pour faire des apis lié au fk ex /api/person/(int: id)/computers (https://flask-restless.readthedocs.io/en/stable/requestformat.html)
