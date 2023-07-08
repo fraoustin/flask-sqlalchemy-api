@@ -6,7 +6,7 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 from functools import wraps
 import logging
 
-__version__ = '0.1.0'
+__version__ = '0.9.1'
 
 SQLTYPE_TO_FLASKTYPE = {Integer: 'int', Float: 'float'}
 
