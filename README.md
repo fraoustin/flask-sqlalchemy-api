@@ -72,7 +72,9 @@ flask-sqlachemy-api generate 6 Apis from Model Class
 - ALL: it's a get request for list of item with url http://domain/api_path/items. You can add parameter filter, orderby, offset, limit.
 
     http://127.0.0.1:5000/api/v1/todos?orderby=title%20desc  method GET
+
     http://127.0.0.1:5000/api/v1/todos?orderby=title%20desc&filter=id%3D  method GET
+
     http://127.0.0.1:5000/api/v1/todos?offset=50&limit=50  method GET
 
 - GET: it's get request for  a specific item with url http://domain/api_path/item/<id>
@@ -102,7 +104,21 @@ You can
 - specific endpoint
 - specific serialize: transform item to json
 
+## Sample
+
+You can launch sample 0 and 1
+
+    python sample/sample0.py &
+    python sample/sample0_test.py
+
+You can launch sample3
+
+    python sample/sample3.py
+
+And you test API by swagger UI on http://127.0.0.1:5000/swagger
 
 ## TODO
 
 - voir pour faire des apis lié au fk ex /api/person/(int: id)/computers (https://flask-restless.readthedocs.io/en/stable/requestformat.html)
+- faire exemple flask-sqlalchemy-api + dbml-to-sqlalchemy
+- faire full application todo avec gestion user

@@ -7,7 +7,7 @@
 import os
 from setuptools import setup, find_packages
 
-__version_info__ = (0, 9, 1)
+__version_info__ = (0, 9, 2)
 VERSION = '.'.join([str(val) for val in __version_info__])
 NAME = "flask-sqlalchemy-api"
 DESC = "flask-sqlalchemy-api extension for flask application"
