@@ -7,14 +7,14 @@ from functools import wraps
 import logging
 import json
 
-__version__ = '0.9.2'
+__version__ = '0.9.3'
 
 SQLTYPE_TO_FLASKTYPE = {Integer: 'int', Float: 'float'}
 SQLTYPE_TO_SWAGGERTYPE = {Integer: 'integer', Float: 'number', BOOLEAN: 'boolean', Boolean: 'boolean'}
 
 
 def model_to_dict(obj):
-    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns if 'not visible by api' not in str(c.comment)}
 
 
 def getConstraint(cls):
@@ -42,13 +42,13 @@ class ItemNotFound(Exception):
 def requestBody(obj, method):
     content = {"application/json": {"schema": {"type": "object", "properties": {}}}}
     if method == 'POST':
-        for c in [c for c in obj.__table__.columns if c.autoincrement is not True]:
+        for c in [c for c in obj.__table__.columns if c.autoincrement is not True and 'not create by api' not in str(c.comment)]:
             content["application/json"]["schema"]["properties"][c.name] = {"type": SQLTYPE_TO_SWAGGERTYPE.get(c.type.__class__, 'string')}
             if c.type.__class__ == Enum:
                 content["application/json"]["schema"]["properties"][c.name]["enum"] = [member for member in c]
         return content
     if method in ["PUT", "PATCH"]:
-        for c in obj.__table__.columns:
+        for c in [c for c in obj.__table__.columns if 'not update by api' not in str(c.comment)]:
             content["application/json"]["schema"]["properties"][c.name] = {"type": SQLTYPE_TO_SWAGGERTYPE.get(c.type.__class__, 'string')}
             if c.type.__class__ == Enum:
                 content["application/json"]["schema"]["properties"][c.name]["enum"] = [member for member in c]
@@ -58,7 +58,7 @@ def requestBody(obj, method):
 
 def responseBody(obj, method):
     content = {"application/json": {"schema": {"type": "object", "properties": {}}}}
-    for c in obj.__table__.columns:
+    for c in [c for c in obj.__table__.columns if 'not visible by api' not in str(c.comment)]:
         content["application/json"]["schema"]["properties"][c.name] = {"type": SQLTYPE_TO_SWAGGERTYPE.get(c.type.__class__, 'string')}
         if c.type.__class__ == Enum:
             content["application/json"]["schema"]["properties"][c.name]["enum"] = [member for member in c]
@@ -137,7 +137,7 @@ class ApiRest(Blueprint):
         if endpoint.split("/")[-1] == unique_endpoint(cls):
             endpoint = endpoint.split("/")[:-1] + ["{%s}" % endpoint.split("/")[-1].split(":")[1][:-1], ]
             endpoint = "/".join(endpoint)
-        swagger = {"paths": {endpoint: {method.lower(): {"tags": [cls.__name__.lower(),], "summary": "", "description": "", "operationId": "%s_%s" % (cls.__name__.lower(), method), "parameters": []}}}}
+        swagger = {"paths": {endpoint: {method.lower(): {"tags": [cls.__name__,], "summary": "", "description": "", "operationId": "%s_%s" % (cls.__name__.lower(), method), "parameters": []}}}}
         for column in parameters:
             parameter = {"name": column.name, "in": "path", "description": "", "required": True, "schema": {"type": SQLTYPE_TO_SWAGGERTYPE.get(column.type.__class__, 'string')}}
             swagger["paths"][endpoint][method.lower()]["parameters"].append(parameter)
@@ -163,6 +163,9 @@ class ApiRest(Blueprint):
             if len(dct) == 0:
                 dct = json.loads(request.get_data())
             for col in [c.name for c in cls.__table__.columns if c.autoincrement is True]:
+                if col in dct:
+                    del dct[col]
+            for col in [c.name for c in cls.__table__.columns if 'not create by api' in str(c.comment)]:
                 if col in dct:
                     del dct[col]
             item = cls(**dct)
@@ -193,7 +196,7 @@ class ApiRest(Blueprint):
                 dct = json.loads(request.get_data())
             for key in kws:
                 dct[key] = kws[key]
-            for col in [c.name for c in item.__table__.columns]:
+            for col in [c.name for c in item.__table__.columns if 'not update by api' not in str(c.comment)]:
                 item.__setattr__(col, dct.get(col))
             self._db.session.commit()
             return serialize(item), 200
@@ -207,7 +210,7 @@ class ApiRest(Blueprint):
                 dct = json.loads(request.get_data())
             for key in kws:
                 dct[key] = kws[key]
-            for col in [key for key in dct if key in item.__table__.columns]:
+            for col in [key for key in dct if key in item.__table__.columns and 'not update by api' not in str(item.__table__.columns[key].comment)]:
                 item.__setattr__(col, dct.get(col))
             self._db.session.commit()
             return serialize(item), 200

@@ -25,7 +25,7 @@ class Todo(db.Model):
     )
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String, nullable=False)
+    title = db.Column(db.String, nullable=False, comment="title of Todo, not visible by api, not update by api, not create by api")
     description = db.Column(db.String, nullable=True)
     status = db.Column(db.String, nullable=True)
 

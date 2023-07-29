@@ -103,6 +103,7 @@ You can
 - add decorator (login, ...) in sample/sample1.py
 - specific endpoint
 - specific serialize: transform item to json
+- specific api action on column using the comment of column (add "not create by api", "not visible by api", "not update by api")
 
 ## Sample
 
